@@ -1,198 +1,85 @@
-/**
- * @file hangman.c
- * @brief A simple implementation of the "Hangman" word guessing game in C,
- * using only the <stdio.h> header file.
- *
- * All string manipulation and character conversion logic is implemented
- * using custom functions to meet the required constraint.
- */
+#include <stdio.h>
 
-#include <stdio.h> 
+// Function Prototypes
+void initializeDisplay(char secret[], char display[]);
+void showGameState(char display[], int lives);
+int processGuess(char secret[], char display[], char guess);
+int isWordComplete(char display[]);
 
-// --- Custom Function Implementations (To avoid string.h and ctype.h) ---
+// Main Function: Controls game flow
+int main() {
+    char secret_word[] = "MENTOR";                     // The secret word to guess
+    char display_word[7];                              // Display version with underscores
+    int lives = 6;                                     // Total number of wrong guesses allowed
+    char guess;                                        // Player's input
 
-/**
- * @brief Custom implementation of strlen to get the length of a null-terminated string.
- * @param s The string (char array).
- * @return The length of the string, excluding the null terminator.
- */
-int my_strlen(const char* s)
-{
-    int length = 0;
-    // Iterate until the null terminator '\0' is found
-    while (s[length] != '\0')
-    {
-        length++;
-    }
-    return length;
-}
+    printf("Welcome to the Hangman Game!\n\n");
 
-/**
- * @brief Custom implementation of toupper to convert a lowercase letter to uppercase.
- * @param c The character to convert.
- * @return The uppercase version of the character, or the original character if not lowercase.
- */
-char my_toupper(char c)
-{
-    // Check if the character is a lowercase letter (ASCII range)
-    if (c >= 'a' && c <= 'z')
-    {
-        // Convert to uppercase by using the fixed difference between 'a' and 'A' in ASCII
-        return c - ('a' - 'A');
-    }
-    return c; // Return as is if already uppercase or not a letter
-}
+    // Initialize the display array with underscores
+    initializeDisplay(secret_word, display_word);
 
-// --- Function Prototypes ---
+    // Main Game Loop
+    while (lives > 0) {
+        showGameState(display_word, lives);             // Show current game state
+        printf("Enter your guess: ");
+        scanf(" %c", &guess);                           // Take single character input
 
-/**
- * @brief Initializes the player's view of the word with underscores.
- */
-void initialize_player_view(char* player_view, int length);
-
-/**
- * @brief Prints the current state of the player's view (e.g., "C L A S H").
- */
-void print_player_view(const char* player_view, int length);
-
-/**
- * @brief Checks the player's guess against the secret word and updates the view.
- * @return 1 if a match was found, 0 otherwise.
- */
-int check_guess(char guess, const char* secret_word, char* player_view, int length);
-
-/**
- * @brief Checks if the player has won the game (no more underscores).
- * @return 1 if the player has won, 0 otherwise.
- */
-int is_game_won(const char* player_view, int length);
-
-// --- Main Game Function ---
-
-int main()
-{
-    // 1. The Secret Word (Hard-coded as uppercase for simplicity)
-    const char secret_word[] = "CLASH";
-    // Use the custom length function
-    const int word_length = my_strlen(secret_word); 
-    int lives = 6; 
-
-    // 2. The Player's View
-    char player_view[word_length + 1]; 
-    initialize_player_view(player_view, word_length);
-
-    int game_won = 0;
-
-    printf("Welcome to Hangman!\n");
-    printf("Secret word length: %d letters. Lives: %d\n", word_length, lives);
-    printf("--------------------------------------------------\n");
-
-    // 3. The Game Loop
-    while (lives > 0 && !game_won)
-    {
-        // Print current state
-        print_player_view(player_view, word_length);
-        printf("Lives remaining: %d\n", lives);
-
-        // Ask user for a guess
-        printf("Guess a letter: ");
-        char guess;
-        // The " %c" format specifier skips leading whitespace
-        scanf(" %c", &guess);
-        
-        // Clear the input buffer using getchar() from stdio.h
-        while (getchar() != '\n');
-
-        // Standardize the guess to uppercase using the custom function
-        guess = my_toupper(guess);
-
-        // 4. The Logic
-        if (check_guess(guess, secret_word, player_view, word_length))
-        {
+        // Process the player’s guess
+        if (processGuess(secret_word, display_word, guess)) {
             printf("Good guess!\n");
-        }
-        else
-        {
-            printf("Sorry, '%c' is not in the word. You lose a life.\n", guess);
-            lives--; 
+        } else {
+            lives--;
+            printf("Wrong guess! You lost a life.\n");
         }
 
-        // 5. Check for win
-        game_won = is_game_won(player_view, word_length);
-        
-        printf("--------------------------------------------------\n");
+        // Check if the word is completely guessed
+        if (isWordComplete(display_word)) {
+            printf("\nCongratulations! You won!\n");
+            printf("The word was: %s\n", secret_word);
+            return 0;
+        }
     }
 
-    // 6. Win/Loss Condition
-    if (game_won)
-    {
-        printf("Congratulations! You won!\n");
-    }
-    else
-    {
-        printf("You lost! The word was: %s\n", secret_word);
-    }
-    
+    // If loop ends, player has lost
+    printf("\nYou lost! The word was: %s\n", secret_word);
     return 0;
 }
 
-
-// --- Function Definitions ---
-
-void initialize_player_view(char* player_view, int length)
-{
+// Function: Initialize display word with underscores
+void initializeDisplay(char secret[], char display[]) {
     int i;
-    for (i = 0; i < length; i++)
-    {
-        player_view[i] = '_';
+    for (i = 0; secret[i] != '\0'; i++) {
+        display[i] = '_';                               // Replace letters with underscores
     }
-    // Add the null terminator
-    player_view[length] = '\0';
+    display[i] = '\0';                                  // Null terminate the display word
 }
 
-void print_player_view(const char* player_view, int length)
-{
-    int i;
-    printf("Word: ");
-    for (i = 0; i < length; i++)
-    {
-        printf("%c ", player_view[i]); // Print with spaces
-    }
-    printf("\n");
+// Function: Display current game state
+void showGameState(char display[], int lives) {
+    printf("\nCurrent Word: %s\n", display);
+    printf("Lives Remaining: %d\n", lives);
 }
 
-int check_guess(char guess, const char* secret_word, char* player_view, int length)
-{
-    int match_found = 0; 
-    int i;
-
-    // Iterate through the secret_word array
-    for (i = 0; i < length; i++)
-    {
-        // Check if the guess matches a letter
-        if (secret_word[i] == guess)
-        {
-            // Update the player's view
-            player_view[i] = guess;
-            match_found = 1;
+// Function: Process a single guessed letter
+// Returns 1 if guess is correct, 0 if incorrect
+int processGuess(char secret[], char display[], char guess) {
+    int i, correct = 0;
+    for (i = 0; secret[i] != '\0'; i++) {
+        if (secret[i] == guess && display[i] == '_') {
+            display[i] = guess;
+            correct = 1;
         }
     }
-    
-    return match_found;
+    return correct;
 }
 
-int is_game_won(const char* player_view, int length)
-{
+// Function: Check if player has guessed the full word
+// Returns 1 if the word is complete, 0 otherwise
+int isWordComplete(char display[]) {
     int i;
-    // Loop through the player's view
-    for (i = 0; i < length; i++)
-    {
-        // If we find even one underscore, the game is still active
-        if (player_view[i] == '_')
-        {
-            return 0; // Not won
-        }
+    for (i = 0; display[i] != '\0'; i++) {
+        if (display[i] == '_')
+            return 0;                                   // Not complete yet
     }
-    // If the loop finishes, all letters have been guessed
-    return 1; // Won
+    return 1;                                           // Word fully guessed
 }
