@@ -1,53 +1,56 @@
-# COC-PROJECT-SUBMISSION-CODE-
-Hangman Word Guessing Game
+Project Title & Description
+This project is a text-based Hangman Word Guessing Game implemented completely in C using only the stdio.h library. The program selects a secret word that the player must guess one letter at a time. For every incorrect guess, the player loses a life. The game ends either when the player reveals the full word or exhausts all lives.
 
-Project Description
+The project demonstrates structured programming in C, modular design through functions, and interactive console-based gameplay. Each section of logic — such as initialization, guess checking, display updates, and win validation — is implemented as a separate function.
 
-This is a classic "Hangman" word-guessing game implemented in the C programming language. The computer stores a secret word ("CLASH" in the hard-coded version), and the player must guess it, letter by letter. The player has a limited number of "lives" (6 wrong guesses) before losing.
-
-The program controls the entire game logic, including:
-
-Initializing the player's hidden view (e.g., _ _ _ _ _).
-
-Handling the main game loop (while loop) until a win or loss condition is met.
-
-Tracking remaining lives and checking the win condition (checking for remaining underscores).
-
-Key Constraint
-
-This project strictly adheres to using only the <stdio.h> header file. All other necessary string and character manipulation logic (like finding string length and converting case) is implemented through custom helper functions (my_strlen, my_toupper).
+Features
+-Displays the current progress of the guessed word.
+-Tracks remaining lives dynamically.
+-Validates each letter guess and updates the display.
+-Declares clear win or loss results.
+-Uses modular function-based structure for clarity and reusability.
 
 Concepts Used
+C Programming Concepts:
+-Character arrays (char secret[], char display[])
+-Loops (while, for) for iteration and control flow
+-Conditional statements (if / else) for logic decisions
+-Functions for modularization (initializeDisplay(), processGuess(), etc.)
+-Console input/output using printf() and scanf()
+-Null termination and string handling
 
-C Programming Concepts (Days 2 - 6)
+Mathematical / Logical Reasoning:
+-Deductive thinking for letter selection
+-Basic probability consideration when guessing letters
+-Pattern recognition while identifying possible words
 
-char Arrays (Day 5): Used to store the secret_word and the player's player_view.
-
-while and for Loops (Day 4): Used for the main game loop and iterating through the word to check guesses.
-
-if/else Statements (Day 3): Used for handling matches/misses, win/loss conditions, and custom logic.
-
-printf()/scanf() (Day 2): Used for all game output and receiving player input.
-
-User-Defined Functions (Day 6): Logic separated into functions like check_guess and is_game_won.
-
-Custom Logic: Implemented helper functions (my_strlen, my_toupper) to replace standard library calls.
-
-Maths / Data Concepts (Day 5 - 6)
-
-Data Application (Day 6): The game itself acts as an application built upon data manipulation.
-
-Statistical Data Analysis (Day 5): The player is (unknowingly) performing data analysis by attempting to guess letters based on their statistical probability in the English language.
+File Structure
+hangman.c       -> Main C program file
+README.md       -> Documentation file describing the project
 
 How to Compile
-
-Using the gcc compiler, you can compile the program with the following command:
-
+Use the following command in your terminal to compile the program:
 gcc hangman.c -o hangman
 
-
 How to Run
-
-Once compiled, execute the program from your terminal:
-
+After compilation, you can execute the game by typing:
 ./hangman
+
+Sample Gameplay
+Welcome to the Hangman Game!
+
+Current Word: _ _ _ _ _ _
+Lives Remaining: 6
+Enter your guess: M
+Good guess!
+
+Current Word: M _ _ _ _ _
+Lives Remaining: 6
+Enter your guess: X
+Wrong guess! You lost a life.
+
+Learning Outcomes
+-Understands the use of arrays, loops, and decision-making in C.
+-Implements modular design and code reusability.
+-Reinforces logic building for text-based games and player interaction in the console.
+
